@@ -58,7 +58,8 @@
 						<td th:text="${cliente.email}"></td>
 						<td th:text="${cliente.createAt}"></td>
 						<td>
-							<a><button th:href="@{/eliminarCliente/${cliente.id}}" class="btn btn-danger">Borrar</button></a>
+							<a class="btn btn-danger btn-xs" th:href= "@{/eliminarCliente/} + ${cliente.id}" th:text="Borrar"></a>
+							<a class="btn btn-primary btn-xs" th:href="@{/nuevoCliente/} + ${cliente.id}" th:text="Editar" onclick="return confirm('¿Estas seguro que quieres eliminar este cliente de la base de datos?')"></a>
 						</td>
 					<!--</form>-->
 				</tr>
