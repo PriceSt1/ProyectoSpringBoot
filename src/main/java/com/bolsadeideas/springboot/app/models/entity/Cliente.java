@@ -30,7 +30,7 @@ public class Cliente implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	@NotEmpty
-	@Size(min=4, max=12)
+	@Size(min=4, max=20)
 	private String nombre;
 	@NotEmpty
 	private String apellido;

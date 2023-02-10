@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 
 import com.bolsadeideas.springboot.app.models.dao.IClienteDao;
+import com.bolsadeideas.springboot.app.models.dao.service.IClienteService;
 import com.bolsadeideas.springboot.app.models.entity.Cliente;
 
 import jakarta.validation.Valid;
@@ -25,8 +26,12 @@ import jakarta.validation.Valid;
 public class ClienteController {
 
 	@Autowired
-	@Qualifier("clienteDaoJPA")
-	private IClienteDao clienteDao;
+	private IClienteService clienteDao;
+	
+	@RequestMapping(value={"","/"})
+	public String Index(Model model) {
+		return "index";
+	}
 	
 	@RequestMapping(value="/listar", method=RequestMethod.GET)
 	private String listar(Model model) {
@@ -54,7 +59,7 @@ public class ClienteController {
 		}
 		clienteDao.save(cliente);
 		status.setComplete();
-		return "redirect:listar";
+		return "redirect:/listar";
 	}
 	
 	@RequestMapping(value="/eliminarCliente/{id}")
@@ -62,7 +67,7 @@ public class ClienteController {
 		if (id>0) {
 			clienteDao.delete(id);
 		}
-		return "redirect:listar";
+		return "redirect:/listar";
 	}
 	@RequestMapping(value = "/nuevoCliente/{id}")
 	private String editar(@PathVariable(value = "id") Long id, Map<String,Object> model) {
