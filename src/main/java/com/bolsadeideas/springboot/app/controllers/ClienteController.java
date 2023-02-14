@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bolsadeideas.springboot.app.models.dao.IClienteDao;
 import com.bolsadeideas.springboot.app.models.dao.service.IClienteService;
@@ -52,30 +53,40 @@ public class ClienteController {
 	//<input type="hidden" th:field="*{id}" />
 	//para que sepamos quienes somos
 	@RequestMapping(value="/nuevoCliente", method=RequestMethod.POST)
-	private String guardar(@Valid Cliente cliente, BindingResult result, Model model, SessionStatus status) {
+	private String guardar(@Valid Cliente cliente, BindingResult result, Model model, RedirectAttributes flash ,SessionStatus status) {
 		if (result.hasErrors()) {
 			model.addAttribute("titulo","Formulario de alta de Clientes");
 			return "nuevoCliente";
 		}
+		String mensajeFlash = (cliente.getId()!=null)?"Cliente editado correctamente" : "Cliente inseratado correctamente";
 		clienteDao.save(cliente);
 		status.setComplete();
+		flash.addFlashAttribute("success", mensajeFlash);
 		return "redirect:/listar";
 	}
 	
 	@RequestMapping(value="/eliminarCliente/{id}")
-	private String Eliminar(@PathVariable("id") Long id) {
+	private String Eliminar(@PathVariable("id") Long id, RedirectAttributes flash ) {
 		if (id>0) {
 			clienteDao.delete(id);
+			flash.addFlashAttribute("success", "Cliente eliminado correctamente");
 		}
+		
 		return "redirect:/listar";
 	}
 	@RequestMapping(value = "/nuevoCliente/{id}")
-	private String editar(@PathVariable(value = "id") Long id, Map<String,Object> model) {
+	private String editar(@PathVariable(value = "id") Long id, Map<String,Object> model, RedirectAttributes flash ) {
 		Cliente cliente = null;
 		if (id > 0) {
 			cliente = clienteDao.findOne(id);
+			if (cliente==null) {
+				flash.addFlashAttribute("error", "Cliente no existe en la base de datos");
+				return "redirect:/listar";
+			}
 		}else {
+			flash.addFlashAttribute("error", "Id erroneo");
 			return "redirect:/listar";
+			
 		}
 		model.put("cliente", cliente);
 		model.put("Titulo", "Editar Cliente");
