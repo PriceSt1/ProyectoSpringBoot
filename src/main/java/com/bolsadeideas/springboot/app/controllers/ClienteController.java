@@ -23,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.bolsadeideas.springboot.app.models.dao.IClienteDao;
 import com.bolsadeideas.springboot.app.models.entity.Cliente;
 import com.bolsadeideas.springboot.app.models.service.IClienteService;
+import com.bolsadeideas.springboot.app.util.paginator.PageRender;
 
 import jakarta.validation.Valid;
 
@@ -41,9 +42,10 @@ public class ClienteController {
 	@RequestMapping(value="/listar", method=RequestMethod.GET)
 	private String listar(@RequestParam(name="page", defaultValue = "0") int page, Model model) {
 		Pageable pageRequest = (Pageable) PageRequest.of(page,5);
-		Page<Cliente> clienPage = clienteDao.findAll(pageRequest);
+		Page<Cliente> clientes = clienteDao.findAll(pageRequest);
+		PageRender<Cliente> pageRender = new PageRender<>("/listar", clientes);
 		model.addAttribute("titulo", "Listado de clientes");
-		model.addAttribute("clientes", clienPage);
+		model.addAttribute("clientes", clientes);
 		return "listar";
 	}
 	@RequestMapping(value="/nuevoCliente")
