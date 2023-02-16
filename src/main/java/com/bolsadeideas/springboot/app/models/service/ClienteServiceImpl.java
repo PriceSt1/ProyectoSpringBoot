@@ -1,8 +1,10 @@
-package com.bolsadeideas.springboot.app.models.dao.service;
+package com.bolsadeideas.springboot.app.models.service;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,12 @@ public class ClienteServiceImpl implements IClienteService{
 	public List<Cliente> findAll() {
 		return (List<Cliente>) clienteDao.findAll();
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public Page<Cliente> findAll(Pageable pageRequest) {
+		return clienteDao.findAll(pageRequest);
+	}
 
 	@Override
 	@Transactional
@@ -30,7 +38,7 @@ public class ClienteServiceImpl implements IClienteService{
 	@Override
 	@Transactional(readOnly = true)
 	public Cliente findOne(Long id) {		
-		return clienteDao.findById(id).orElse(null);
+		return (Cliente) clienteDao.findById(id).orElse(null);
 	}
 
 	@Override
@@ -38,5 +46,7 @@ public class ClienteServiceImpl implements IClienteService{
 	public void delete(Long id) {
 		clienteDao.deleteById(id);		
 	}
+
+
 
 }

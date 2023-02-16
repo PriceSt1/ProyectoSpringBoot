@@ -1,24 +1,28 @@
 package com.bolsadeideas.springboot.app.controllers;
 
+import java.awt.print.Pageable;
 import java.util.Map;
 
 import javax.naming.Binding;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bolsadeideas.springboot.app.models.dao.IClienteDao;
-import com.bolsadeideas.springboot.app.models.dao.service.IClienteService;
 import com.bolsadeideas.springboot.app.models.entity.Cliente;
+import com.bolsadeideas.springboot.app.models.service.IClienteService;
 
 import jakarta.validation.Valid;
 
@@ -35,9 +39,11 @@ public class ClienteController {
 	}
 	
 	@RequestMapping(value="/listar", method=RequestMethod.GET)
-	private String listar(Model model) {
+	private String listar(@RequestParam(name="page", defaultValue = "0") int page, Model model) {
+		Pageable pageRequest = (Pageable) PageRequest.of(page,5);
+		Page<Cliente> clienPage = clienteDao.findAll(pageRequest);
 		model.addAttribute("titulo", "Listado de clientes");
-		model.addAttribute("clientes", clienteDao.findAll());
+		model.addAttribute("clientes", clienPage);
 		return "listar";
 	}
 	@RequestMapping(value="/nuevoCliente")
