@@ -1,6 +1,5 @@
 package com.bolsadeideas.springboot.app.models.dao;
 
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +19,5 @@ public interface IClienteDao extends PagingAndSortingRepository<Cliente, Long>{
 
 	void deleteById(Long id);
 
-	Page<Cliente> findAll(Pageable pageRequest);
 	
 }

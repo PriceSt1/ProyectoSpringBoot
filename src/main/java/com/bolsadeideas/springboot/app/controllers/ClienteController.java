@@ -1,6 +1,6 @@
 package com.bolsadeideas.springboot.app.controllers;
 
-import java.awt.print.Pageable;
+
 import java.util.Map;
 
 import javax.naming.Binding;
@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -46,6 +47,7 @@ public class ClienteController {
 		PageRender<Cliente> pageRender = new PageRender<>("/listar", clientes);
 		model.addAttribute("titulo", "Listado de clientes");
 		model.addAttribute("clientes", clientes);
+		model.addAttribute("page",pageRender);
 		return "listar";
 	}
 	@RequestMapping(value="/nuevoCliente")

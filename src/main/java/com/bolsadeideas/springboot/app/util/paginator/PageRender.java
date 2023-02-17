@@ -19,9 +19,9 @@ public class PageRender<T> {
 		super();
 		this.url = url;
 		this.page = page;
-		this.totalPaginas = totalPaginas;
-		this.numElementosPorPagina = numElementosPorPagina;
-		this.paginaActual = paginaActual;
+		this.totalPaginas = page.getTotalPages();
+		this.numElementosPorPagina = page.getSize();
+		this.paginaActual = page.getNumber() + 1;
 		this.paginas = new ArrayList<PageItem>();
 		
 		int desde,hasta;

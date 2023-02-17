@@ -1,9 +1,10 @@
 package com.bolsadeideas.springboot.app.models.service;
 
-import java.awt.print.Pageable;
+
 import java.util.List;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.bolsadeideas.springboot.app.models.entity.Cliente;
 
