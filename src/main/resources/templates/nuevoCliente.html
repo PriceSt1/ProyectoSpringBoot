@@ -2,18 +2,19 @@
 <html xmlns="th=http://www.thymeleaf.org">
 
 <head th:replace="~{layout/layout :: head}"></head>
+
 <body>
 	<header th:replace="~{layout/layout :: header}"></header>
 	<div class="container">
 		<br />
 		<div th:object="${cliente}" th:remove="tag">
 			<ul th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
-				<li th:each="err: ${#fields.errors('*')}" th:text="${err}"> </li>				
+				<li th:each="err: ${#fields.errors('*')}" th:text="${err}"> </li>
 			</ul>
 		</div>
 		<br />
-		
-		<form th:action="@{/nuevoCliente}" th:object="${cliente}" method="post">
+
+		<form th:action="@{/nuevoCliente}" th:object="${cliente}" method="post" enctype="multipart/form-data">
 			<div class="form-row">
 				<div class="text-center">
 					<h3 th:text="${titulo}"></h3>
@@ -24,10 +25,10 @@
 					<!--<small class="form-text text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></small>-->
 				</div>
 				<div class="mb-3">
-					<label for="inputEmail4">Apellido</label>
+					<label for="inputApellido4">Apellido</label>
 					<input type="text" class="form-control" id="inputApellido" placeholder="Apellido"
 						th:field="*{apellido}" />
-						<!--<small class="form-text text-danger" th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></small>-->
+					<!--<small class="form-text text-danger" th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></small>-->
 				</div>
 				<div class="mb-3">
 					<label for="inputEmail4">Email</label>
@@ -35,13 +36,19 @@
 					<!--<small class="form-text text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>-->
 				</div>
 				<div class="mb-3">
-					<label for="inputEmail4">Fecha</label>
-					<input type="text" class="form-control" id="inputFecha" placeholder="Fecha" th:field="*{createAt}" />
+					<label for="inputFecha4">Fecha</label>
+					<input type="text" class="form-control" id="inputFecha" placeholder="Fecha"
+						th:field="*{createAt}" />
+					<!--<small class="form-text text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>-->
+				</div>
+				<div class="mb-3">
+					<label for="inputEmail4">Foto</label>
+					<input type="file" name="file" class="form-control"/>
 					<!--<small class="form-text text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>-->
 				</div>
 				</br>
 				<button type="submit" class="btn btn-outline-primary">Insertar</button>
-				
+
 		</form>
 	</div>
 	<footer th:replace="~{layout/layout :: footer}"></footer>

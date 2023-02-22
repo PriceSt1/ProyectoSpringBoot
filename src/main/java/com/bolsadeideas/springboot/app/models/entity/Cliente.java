@@ -41,6 +41,7 @@ public class Cliente implements Serializable {
 	@Temporal(TemporalType.DATE) //Especificamos que es de tipo fecha
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private Date createAt;
+	private String foto;
 	
 	public Long getId() {
 		return id;
@@ -81,6 +82,12 @@ public class Cliente implements Serializable {
 		return serialVersionUID;
 	}
 	
+	public String getFoto() {
+		return foto;
+	}
+	public void setFoto(String foto) {
+		this.foto = foto;
+	}
 	@Override
 	public String toString() {
 		return "Cliente [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + ", email=" + email

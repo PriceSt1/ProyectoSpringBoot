@@ -40,6 +40,8 @@
 								onclick="return confirm('¿Estas seguro que quieres eliminar este cliente de la base de datos?')"></a>
 							<a class="btn btn-outline-primary btn-xs" th:href="@{/nuevoCliente/} + ${cliente.id}"
 								th:text="Editar"></a>
+							<a class="btn btn-outline-primary btn-xs" th:href="@{/ver/} + ${cliente.id}"
+								th:text="Ver"></a>
 						</td>
 						<!--</form>-->
 					</tr>
