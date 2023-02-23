@@ -35,6 +35,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.bolsadeideas.springboot.app.models.dao.IClienteDao;
 import com.bolsadeideas.springboot.app.models.entity.Cliente;
 import com.bolsadeideas.springboot.app.models.service.IClienteService;
+import com.bolsadeideas.springboot.app.models.service.IUploadFileService;
 import com.bolsadeideas.springboot.app.util.paginator.PageRender;
 
 import jakarta.validation.Valid;
@@ -45,26 +46,14 @@ public class ClienteController {
 
 	@Autowired
 	private IClienteService clienteDao;
+	private IUploadFileService fileService;
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 	private final static String UPLOADS_FOLDER="uploads";
 
 	@GetMapping(value = "/uploads/{filename:.+}")
 	public ResponseEntity<Resource> verFoto(@PathVariable String filename) {
-		Path pathFoto = Paths.get(UPLOADS_FOLDER).resolve(filename).toAbsolutePath();
-		log.info("PathFoto: " + pathFoto);
-		Resource recurso = null;
-
-		try {
-
-			recurso = new UrlResource(pathFoto.toUri());
-			if (!recurso.exists() || !recurso.isReadable()) {
-				throw new RuntimeException("Error no se puede cargar la imagen" + pathFoto.toString());
-			}
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-
+		
 		return ResponseEntity.ok()
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"")
 				.body(recurso);
@@ -113,9 +102,11 @@ public class ClienteController {
 	// en lugar de poner lineas como esta en la pagina de listar:
 	// <input type="hidden" th:field="*{id}" />
 	// para que sepamos quienes somos
+	
+	
 	@RequestMapping(value = "/nuevoCliente", method = RequestMethod.POST)
 	private String guardar(@Valid Cliente cliente, BindingResult result, Model model, RedirectAttributes flash,
-			SessionStatus status, @RequestParam("file") MultipartFile foto) {
+			SessionStatus status, @RequestParam("file") MultipartFile foto) throws IOException {
 		if (result.hasErrors()) {
 			model.addAttribute("titulo", "Formulario de alta de Clientes");
 			return "nuevoCliente";
@@ -136,27 +127,9 @@ public class ClienteController {
 					archivoFile.delete();
 				}
 			}
-			String uniqueFilename = UUID.randomUUID().toString() + "_" + foto.getOriginalFilename();
-			Path rootPath = Paths.get(UPLOADS_FOLDER).resolve(uniqueFilename);
-			Path rootAbsolutePath = rootPath.toAbsolutePath();
-			log.info("rootPath: " + rootPath);
-			log.info("rootAbsolutePath: " + rootAbsolutePath);
-
-			try {
-				/*
-				 * byte[] bytes = foto.getBytes(); Path rutaCompleta=
-				 * Paths.get(rootPath+"//"+foto.getOriginalFilename());
-				 * Files.write(rutaCompleta, bytes);
-				 */
-				Files.copy(foto.getInputStream(), rootAbsolutePath);
-				flash.addFlashAttribute("info", "Has subido correctamente la foto " + foto.getOriginalFilename());
-				cliente.setFoto(uniqueFilename);
-
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+			String uniqueFilename = fileService.copy(foto);
+			flash.addFlashAttribute("info", "Has subido correctamente " +  uniqueFilename);
+			cliente.setFoto(uniqueFilename);
 		}
 		String mensajeFlash = (cliente.getId() != null) ? "Cliente editado correctamente"
 				: "Cliente inseratado correctamente";
@@ -173,7 +146,7 @@ public class ClienteController {
 			clienteDao.delete(id);
 			flash.addFlashAttribute("success", "Cliente eliminado correctamente");
 
-			Path rootPath = Paths.get("uploads").resolve(cliente.getFoto()).toAbsolutePath();
+			Path rootPath = Paths.get(UPLOADS_FOLDER).resolve(cliente.getFoto()).toAbsolutePath();
 			File archivo = rootPath.toFile();
 			if (archivo.exists() && archivo.canRead()) {
 				if (archivo.delete()) {
