@@ -1,5 +1,6 @@
 package com.bolsadeideas.springboot.app.models.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -11,8 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+@Service
 public class UploadFileServiceImpl implements IUploadFileService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
@@ -33,7 +36,7 @@ public class UploadFileServiceImpl implements IUploadFileService {
 	}
 
 	@Override
-	public String copy(MultipartFile file) {
+	public String copy(MultipartFile file) throws IOException{
 		String uniqueFilename = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 		Path rootPath = Paths.get(UPLOADS_FOLDER).resolve(uniqueFilename);
 		Path rootAbsolutePath = rootPath.toAbsolutePath();
@@ -59,7 +62,12 @@ public class UploadFileServiceImpl implements IUploadFileService {
 
 	@Override
 	public boolean delete(String file) {
-		// TODO Auto-generated method stub
+		Path rootPath = getPath(file);
+		File archivo = rootPath.toFile();
+		if (archivo.exists() && archivo.canRead()) {
+			if (archivo.delete()) {
+				return true;			}
+		}
 		return false;
 	}
 

@@ -46,14 +46,23 @@ public class ClienteController {
 
 	@Autowired
 	private IClienteService clienteDao;
+	@Autowired
 	private IUploadFileService fileService;
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	private final static String UPLOADS_FOLDER="uploads";
+	private final static String UPLOADS_FOLDER = "uploads";
 
 	@GetMapping(value = "/uploads/{filename:.+}")
 	public ResponseEntity<Resource> verFoto(@PathVariable String filename) {
-		
+
+		Resource recurso = null;
+
+		try {
+			recurso = fileService.load(filename);
+
+		} catch (MalformedURLException e) {
+			// TODO: handle exception
+		}
 		return ResponseEntity.ok()
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"")
 				.body(recurso);
@@ -102,8 +111,7 @@ public class ClienteController {
 	// en lugar de poner lineas como esta en la pagina de listar:
 	// <input type="hidden" th:field="*{id}" />
 	// para que sepamos quienes somos
-	
-	
+
 	@RequestMapping(value = "/nuevoCliente", method = RequestMethod.POST)
 	private String guardar(@Valid Cliente cliente, BindingResult result, Model model, RedirectAttributes flash,
 			SessionStatus status, @RequestParam("file") MultipartFile foto) throws IOException {
@@ -121,14 +129,16 @@ public class ClienteController {
 
 			// Aqui se sustituye la foto antigua por una nueva
 			if (cliente.getId() != null && cliente.getId() > 0 && cliente.getFoto().length() > 0) {
-				Path rootPath = Paths.get(UPLOADS_FOLDER).resolve(cliente.getFoto()).toAbsolutePath();
-				File archivoFile = rootPath.toFile();
-				if (archivoFile.exists() && archivoFile.canRead()) {
-					archivoFile.delete();
-				}
+				fileService.delete(cliente.getFoto());
 			}
-			String uniqueFilename = fileService.copy(foto);
-			flash.addFlashAttribute("info", "Has subido correctamente " +  uniqueFilename);
+
+			String uniqueFilename = null;
+			try {
+				uniqueFilename = fileService.copy(foto);
+			} catch (IOException e) {
+				// TODO: handle exception
+			}
+			flash.addFlashAttribute("info", "Has subido correctamente " + uniqueFilename);
 			cliente.setFoto(uniqueFilename);
 		}
 		String mensajeFlash = (cliente.getId() != null) ? "Cliente editado correctamente"
@@ -145,14 +155,12 @@ public class ClienteController {
 			Cliente cliente = clienteDao.findOne(id);
 			clienteDao.delete(id);
 			flash.addFlashAttribute("success", "Cliente eliminado correctamente");
+			
+			if (fileService.delete(cliente.getFoto())) {
+				flash.addFlashAttribute("info", "La Foto " + cliente.getFoto() + " ha sido borrada con exito.");
 
-			Path rootPath = Paths.get(UPLOADS_FOLDER).resolve(cliente.getFoto()).toAbsolutePath();
-			File archivo = rootPath.toFile();
-			if (archivo.exists() && archivo.canRead()) {
-				if (archivo.delete()) {
-					flash.addFlashAttribute("info", "La Foto " + cliente.getFoto() + " ha sido borrada con exito.");
-				}
 			}
+
 		}
 
 		return "redirect:/listar";
