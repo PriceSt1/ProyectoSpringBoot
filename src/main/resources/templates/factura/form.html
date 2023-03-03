@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://mmw. thymeleaf.org">
+
+<head th:replace="Layout/layout :: head"></head> I
+
+<body>
+	<header th:replace="layout/Layout :: header"></header>
+	<div class="container ру-4">
+		<div class="card bg-light">
+			<div class="card-header" th:text="$(titulo)"></div>
+			<div class="card-body">
+				<h4 class="card-title"></h4>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout/layout :: footer"></footer>
+</body>
+
+</html>
+

@@ -52,7 +52,7 @@ public class Cliente implements Serializable {
 	private String foto;
 
 	public Cliente() {
-		this.facturas = new ArrayList<Factura>();
+		facturas = new ArrayList<Factura>();
 	}
 
 	public Long getId() {
